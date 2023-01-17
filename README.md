@@ -66,7 +66,7 @@ docker build -t todo-app-be .
 docker images
 
 REPOSITORY             TAG       IMAGE ID       CREATED         SIZE
-spring-sample-docker   latest    23bdf982b7ab   0 minutes ago   344MB
+todo-app-be   latest    23bdf982b7ab   0 minutes ago   344MB
 ```
 
 ### Docker Run
