@@ -49,6 +49,18 @@ Pastikan aplikasi berjalan sesuai.
 
 ## Docker
 
+### Docker Network
+```bash
+docker network ls
+
+NETWORK ID     NAME               DRIVER    SCOPE
+31119e8c43dd   bridge             bridge    local
+70f7dde2381c   host               host      local
+604b0b5a51f2   none               null      local
+7dc1ddb29f45   todo-app-network   bridge    local
+```
+Gunakan `network` `todo-app-network` agar sama seperti container postgre
+
 ### Dockerfile
 ```dockerfile
 FROM openjdk:17-jdk-alpine
