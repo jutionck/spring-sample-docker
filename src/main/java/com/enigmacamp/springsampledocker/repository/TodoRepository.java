@@ -1,11 +1,9 @@
 package com.enigmacamp.springsampledocker.repository;
 
 import com.enigmacamp.springsampledocker.model.Todo;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-public interface TodoRepository {
-    Todo create(Todo todo) throws Exception;
-    List<Todo> getAll() throws Exception;
-    Todo getById(String id) throws Exception;
+@Repository
+public interface TodoRepository extends JpaRepository<Todo, String> {
 }

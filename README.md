@@ -5,15 +5,49 @@
 git clone https://github.com/jutionck/spring-sample-docker.git
 ```
 
+### Note
+1. Karena sudah menggunakan database dan ingin dijalankan dengan docker maka databasenya kita buat juga dengan image docker.
+2. Silahkan pull image postgres dahulu `docker pull postgres:alpine3.17`
+3. Perlu diingat image database dan image spring yang nanti kita buat harus mempunyai interaksi, interaksi disini adalah penggunaan `network`.
+4. Buat `network` terlebih dahulu dengan perintah `docker network create todo-app-network`.
+5. Cek `network`yang sudah dibuat dengan perintah `docker network ls`
+6. Setelah itu kita jalankan image postgre yang sudah di pull sebelumnya dengan perintah berikut
+    ```bash
+    docker run --network todo-app-network -d --name todo-app-db -e POSTGRES_PASSWORD=P@ssw0rd -p 5433:5432 postgres:alpine3.17
+    ```
+7. Selanjutnya masuk ke container db yang sudah dibuat dengan perintah
+    ```bash
+   docker exec -it <container_id> bash
+   
+   psql -U postgres
+   
+   postgres=# create database db_spring_sample_docker;
+    ```
+
+### Add Database, Open `application.properties`
+```
+spring.banner.location=banner.txt
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:postgresql://${DB_HOST}/${DB_NAME}
+spring.datasource.username=${DB_USER}
+spring.datasource.password=${DB_PASSWORD}
+spring.jpa.show-sql=true
+```
+
 ### Build Project
 ```bash
-mvn clean package
+mvn clean package -DskipTests
 ```
 
 ### Test Run After Build
 ```bash
-java -jar target/<*.jar>
+DB_HOST=localhost:5433 DB_NAME=db_spring_sample_docker DB_USER=postgres DB_PASSWORD=P@ssw0rd java -jar target/spring-sample-docker-0.0.1-SNAPSHOT.jar
 ```
+Pastikan aplikasi berjalan sesuai.
+
+## Docker
 
 ### Dockerfile
 ```dockerfile
@@ -24,7 +58,7 @@ CMD ["java", "-jar", "/spring-sample-docker-0.0.1-SNAPSHOT.jar"]
 
 ### Docker Build
 ```bash
-docker build -t spring-sample-docker .
+docker build -t todo-app-be .
 ```
 
 ### Docker Image
@@ -37,26 +71,5 @@ spring-sample-docker   latest    23bdf982b7ab   0 minutes ago   344MB
 
 ### Docker Run
 ```bash
-docker run spring-sample-docker
-
-
-  _____       _                          ____
- | ____|_ __ (_) __ _ _ __ ___   __ _   / ___|__ _ _ __ ___  _ __
- |  _| | '_ \| |/ _` | '_ ` _ \ / _` | | |   / _` | '_ ` _ \| '_ \
- | |___| | | | | (_| | | | | | | (_| | | |__| (_| | | | | | | |_) |
- |_____|_| |_|_|\__, |_| |_| |_|\__,_|  \____\__,_|_| |_| |_| .__/
-                |___/                                       |_|
-
-2023-01-12T08:42:21.661Z  INFO 1 --- [           main] c.e.s.SpringSampleDockerApplication      : Starting SpringSampleDockerApplication v0.0.1-SNAPSHOT using Java 17-ea with PID 1 (/spring-sample-docker-0.0.1-SNAPSHOT.jar started by root in /)
-2023-01-12T08:42:21.676Z  INFO 1 --- [           main] c.e.s.SpringSampleDockerApplication      : No active profile set, falling back to 1 default profile: "default"
-2023-01-12T08:42:24.353Z  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
-2023-01-12T08:42:24.387Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2023-01-12T08:42:24.387Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.4]
-2023-01-12T08:42:24.623Z  INFO 1 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2023-01-12T08:42:24.628Z  INFO 1 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2656 ms
-2023-01-12T08:42:25.663Z  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2023-01-12T08:42:25.704Z  INFO 1 --- [           main] c.e.s.SpringSampleDockerApplication      : Started SpringSampleDockerApplication in 5.559 seconds (process running for 6.555)
-Todo App
-Todo{todoId='86b7dd56-6301-4d30-9066-4781c98a153e', name='Makan', isCompleted=false}
-
+docker run --network todo-app-network -e DB_HOST=todoappdb:5433 -e DB_NAME=db_spring_sample_docker -e DB_USER=postgres -e DB_PASSWORD=P@ssw0rd todo-app-be
 ```

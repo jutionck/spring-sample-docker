@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class TodoRepositoryImpl implements TodoRepository {
+public class TodoArrayRepositoryImpl implements TodoArrayRepository {
     @Autowired
     IdGenerator idGenerator;
     private List<Todo> todos = new ArrayList<>();
