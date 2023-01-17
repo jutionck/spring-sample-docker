@@ -7,7 +7,7 @@ git clone https://github.com/jutionck/spring-sample-docker.git
 
 ### Checkout Branch
 ```bash
-git checkout 3-with-compose
+git checkout 4-rest-api
 ```
 
 ## Docker
@@ -47,6 +47,8 @@ services:
       - DB_USER=${DB_USER}
       - DB_NAME=${DB_NAME}
       - DB_PASSWORD=${DB_PASSWORD}
+    ports:
+      - ${API_PORT}:8080
     networks:
       - todo-network
   db:
@@ -69,7 +71,7 @@ networks:
 ### Docker Compose Up
 Untuk menjalankan ikuti perintah berikut
 ```bash
-DB_HOST=todo-db DB_PORT=5432 DB_NAME=postgres DB_USER=postgres DB_PASSWORD=P@ssw0rd docker compose up
+DB_HOST=todo-db DB_PORT=5432 DB_NAME=postgres DB_USER=postgres DB_PASSWORD=P@ssw0rd API_PORT=8080 docker compose up
 ```
 Pastikan aplikasi berjalan sesuai.
 
@@ -77,4 +79,48 @@ Pastikan aplikasi berjalan sesuai.
 Untuk menjalankan ikuti perintah berikut
 ```bash
 docker compose down
+```
+
+### HTTP
+
+`POST` http://localhost:8080/api/v1/todos
+- Content-Type: application/json
+- Request
+```json
+{
+  "name": "Makan",
+  "completed": false
+}
+```
+- Response
+```json
+{
+  "todoId": "2a0096cb-c887-4c82-9639-cc2cb65cbda0",
+  "name": "Makan",
+  "completed": false
+}
+```
+
+`GET` http://localhost:8080/api/v1/todos
+- Content-Type: application/json
+- Response
+```json
+[
+  {
+    "todoId": "2a0096cb-c887-4c82-9639-cc2cb65cbda0",
+    "name": "Makan",
+    "completed": null
+  }
+]
+```
+
+`GET` http://localhost:8080/api/v1/todos/{id}
+- Content-Type: application/json
+- Response
+```json
+{
+  "todoId": "2a0096cb-c887-4c82-9639-cc2cb65cbda0",
+  "name": "Makan",
+  "completed": null
+}
 ```
